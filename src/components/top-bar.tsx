@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Sparkles } from 'lucide-react'
+import { ChevronDown, LogOut, Sparkles } from 'lucide-react'
 import { activeNavItem, ROLE_ROOT } from '@/lib/nav-config'
 import { t, type Lang } from '@/lib/i18n'
 import type { Role } from '@/lib/types'
@@ -14,10 +14,13 @@ import type { Role } from '@/lib/types'
  * For students the scope chips are always visible (like the reference app):
  * the subject selector jumps to that subject's page, or updates tutor/practice
  * in place. Ctrl/Cmd+K opens the tutor from anywhere.
+ * Clicking the account chip opens a small menu with the signed-out action.
  */
 export function TopBar({
   role,
   fullName,
+  roleLabel,
+  signOut,
   boardCode,
   grade,
   subjects,
@@ -25,6 +28,8 @@ export function TopBar({
 }: {
   role: Role
   fullName: string
+  roleLabel: string
+  signOut: () => Promise<void>
   boardCode?: string | null
   grade?: number | null
   subjects?: { id: string; name: string }[] | null
@@ -64,6 +69,17 @@ export function TopBar({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [isStudent, router])
+
+  // Account menu: close when clicking outside the chip.
+  const accountRef = useRef<HTMLDetailsElement>(null)
+  const [accountOpen, setAccountOpen] = useState(false)
+  useEffect(() => {
+    const close = (e: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) setAccountOpen(false)
+    }
+    document.addEventListener('click', close)
+    return () => document.removeEventListener('click', close)
+  }, [])
 
   return (
     <div className="sticky top-0 z-20 hidden border-b border-stone-200/70 bg-cream/90 backdrop-blur md:block">
@@ -130,12 +146,43 @@ export function TopBar({
             </button>
           ) : null}
 
-          <span className="flex items-center gap-2 rounded-full border border-stone-200/80 bg-white py-1 pl-1 pr-3 shadow-card">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-rose-600 text-xs font-bold text-white" aria-hidden="true">
-              {initial}
-            </span>
-            <span className="max-w-[10rem] truncate text-sm font-semibold text-stone-800">{fullName}</span>
-          </span>
+          <details
+            ref={accountRef}
+            open={accountOpen}
+            onToggle={(e) => setAccountOpen((e.target as HTMLDetailsElement).open)}
+            className="relative"
+          >
+            <summary
+              className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-stone-200/80 bg-white py-1 pl-1 pr-2.5 shadow-card transition-all hover:shadow-pop [&::-webkit-details-marker]:hidden"
+              aria-haspopup="menu"
+              title={fullName}
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-rose-600 text-xs font-bold text-white" aria-hidden="true">
+                {initial}
+              </span>
+              <span className="max-w-[10rem] truncate text-sm font-semibold text-stone-800">{fullName}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-stone-400" aria-hidden="true" />
+            </summary>
+            <div
+              role="menu"
+              className="absolute right-0 top-[calc(100%+8px)] w-56 rounded-2xl border border-stone-200/80 bg-white p-1.5 shadow-pop"
+            >
+              <div className="border-b border-stone-100 px-3 pb-2 pt-1.5">
+                <p className="truncate text-sm font-semibold text-stone-800">{fullName}</p>
+                <p className="mt-0.5 text-xs text-stone-500">{roleLabel}</p>
+              </div>
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  role="menuitem"
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-rose-600 transition-colors hover:bg-blush-50"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  {t(lang, 'sign_out')}
+                </button>
+              </form>
+            </div>
+          </details>
         </div>
       </div>
     </div>
