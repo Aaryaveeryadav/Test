@@ -19,10 +19,10 @@ const components: Components = {
   code: ({ node, ...props }) => <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-sm" {...props} />,
   pre: ({ node, ...props }) => <pre className="mb-2 overflow-x-auto rounded-lg bg-slate-50 p-3 text-sm" {...props} />,
   a: ({ node, ...props }) => (
-    <a className="text-indigo-600 underline" target="_blank" rel="noopener noreferrer" {...props} />
+    <a className="text-rose-600 underline" target="_blank" rel="noopener noreferrer" {...props} />
   ),
   blockquote: ({ node, ...props }) => (
-    <blockquote className="mb-2 border-l-4 border-indigo-200 pl-3 text-slate-600" {...props} />
+    <blockquote className="mb-2 border-l-4 border-rose-200 pl-3 text-slate-600" {...props} />
   ),
   table: ({ node, ...props }) => (
     <div className="mb-2 overflow-x-auto">
@@ -50,7 +50,7 @@ export function CitationList({ citations }: { citations: { id: string; label: st
     <ul className="mt-2 space-y-1">
       {citations.map((c) => (
         <li key={c.id} className="text-xs text-slate-500">
-          <span className="mr-1 font-semibold text-indigo-600">[{c.id}]</span>
+          <span className="mr-1 font-semibold text-rose-600">[{c.id}]</span>
           {c.label}
         </li>
       ))}

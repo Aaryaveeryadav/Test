@@ -83,7 +83,7 @@ export default async function TeacherAssignmentsPage() {
                   <li key={a.id} className="rounded-lg border p-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
-                        <Link href={`/teacher/assignments/${a.id}`} className="font-semibold text-slate-800 hover:text-indigo-600">
+                        <Link href={`/teacher/assignments/${a.id}`} className="font-semibold text-slate-800 hover:text-rose-600">
                           {a.title}
                         </Link>
                         <p className="text-xs text-slate-500">

@@ -24,12 +24,12 @@ export default async function TeacherHome() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {assignments.map((a) => (
             <Link key={a.id} href={`/teacher/class/${a.id}`} className="card transition hover:border-indigo-300">
-              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">
                 Class {a.grade} {a.className} · Section {a.section}
               </p>
               <p className="mt-1 text-lg font-bold text-slate-800">{a.subjectName}</p>
               <p className="mt-1 text-xs text-slate-400">Academic year {a.academicYear}</p>
-              <p className="mt-3 text-sm font-semibold text-indigo-600">Open class dashboard →</p>
+              <p className="mt-3 text-sm font-semibold text-rose-600">Open class dashboard →</p>
             </Link>
           ))}
         </div>

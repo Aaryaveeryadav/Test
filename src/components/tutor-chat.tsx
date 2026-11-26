@@ -204,7 +204,7 @@ export function TutorChat({
           ) : null}
           {messages.map((m) =>
             m.role === 'user' ? (
-              <div key={m.id} className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-indigo-600 px-4 py-2.5 text-sm text-white sm:max-w-[75%]">
+              <div key={m.id} className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-rose-600 px-4 py-2.5 text-sm text-white sm:max-w-[75%]">
                 {m.content}
               </div>
             ) : (
@@ -238,7 +238,7 @@ export function TutorChat({
                 onClick={() => setMode(m.id)}
                 className={cn(
                   'rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
-                  mode === m.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  mode === m.id ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 )}
                 aria-pressed={mode === m.id}
               >
@@ -306,7 +306,7 @@ function ChatListButton({
       }}
       className={cn(
         'block w-full truncate rounded-lg px-3 py-2 text-left text-sm',
-        active ? 'bg-indigo-50 font-semibold text-indigo-700' : 'text-slate-600 hover:bg-slate-100'
+        active ? 'bg-blush-50 font-semibold text-rose-700' : 'text-slate-600 hover:bg-slate-100'
       )}
     >
       {chat.title}
@@ -327,13 +327,13 @@ function AssistantMessage({ message }: { message: ChatMessageRow }) {
   return (
     <div className="max-w-full rounded-2xl rounded-tl-sm border border-slate-200 bg-slate-50 p-4">
       <div className="mb-2 flex flex-wrap items-center gap-2">
-        <Bot className="h-4 w-4 text-indigo-600" />
+        <Bot className="h-4 w-4 text-rose-600" />
         {badge ? <Badge tone={badge.tone}>{badge.text}</Badge> : <Badge tone="slate">Tutor</Badge>}
         {message.mode ? <Badge tone="slate">{TUTOR_MODES.find((t) => t.id === message.mode)?.label ?? message.mode}</Badge> : null}
       </div>
       <Markdown>{message.content}</Markdown>
       {message.concept ? (
-        <p className="mt-2 text-xs text-indigo-700">
+        <p className="mt-2 text-xs text-rose-700">
           <Lightbulb className="mr-1 inline h-3 w-3" />
           Builds on syllabus concept: <strong>{message.concept}</strong>
         </p>
@@ -344,13 +344,13 @@ function AssistantMessage({ message }: { message: ChatMessageRow }) {
       ) : null}
       {message.citations && message.citations.length > 0 ? (
         <details className="mt-2">
-          <summary className="cursor-pointer text-xs font-semibold text-indigo-600">
+          <summary className="cursor-pointer text-xs font-semibold text-rose-600">
             References ({message.citations.length}) — approved material with page/numbers
           </summary>
           <ul className="mt-1 space-y-1">
             {message.citations.map((c) => (
               <li key={c.id} className="text-xs text-slate-600">
-                <span className="mr-1 font-bold text-indigo-600">[{c.id}]</span>
+                <span className="mr-1 font-bold text-rose-600">[{c.id}]</span>
                 {c.source_title}
                 {c.chapter ? ` · ${c.chapter}` : ''}
                 {c.page_number != null ? ` · page ${c.page_number}` : ''}

@@ -11,6 +11,7 @@ export interface StudentContext {
   schoolId: string
   schoolName: string
   boardName: string
+  boardCode: string
   grade: number
   schoolClassId: string
   className: string
@@ -60,6 +61,7 @@ export async function getStudentContext(profile: Profile): Promise<StudentContex
     schoolId: sc.school_id,
     schoolName: sc.schools.name,
     boardName: sc.classes.boards?.name ?? '—',
+    boardCode: sc.classes.boards?.code ?? '',
     grade: sc.classes.grade,
     schoolClassId: sc.id,
     className: sc.classes.label ?? `Class ${sc.classes.grade}`,

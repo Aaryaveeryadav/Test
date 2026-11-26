@@ -118,7 +118,7 @@ export default async function TopicsPage({
 
       <p className="mt-4 text-sm text-slate-500">
         Need practice material for emphasized topics?{' '}
-        <Link href="/teacher/notes" className="font-semibold text-indigo-600 hover:underline">
+        <Link href="/teacher/notes" className="font-semibold text-rose-600 hover:underline">
           Add notes and practice questions →
         </Link>
       </p>

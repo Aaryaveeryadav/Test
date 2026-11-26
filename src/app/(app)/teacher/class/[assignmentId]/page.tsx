@@ -93,7 +93,7 @@ export default async function ClassDashboard({ params }: { params: Promise<{ ass
         <Card>
           <CardTitle
             right={
-              <Link href="/teacher/review" className="text-sm font-semibold text-indigo-600 hover:underline">
+              <Link href="/teacher/review" className="text-sm font-semibold text-rose-600 hover:underline">
                 Review flags →
               </Link>
             }
@@ -130,7 +130,7 @@ export default async function ClassDashboard({ params }: { params: Promise<{ ass
         <Card>
           <CardTitle
             right={
-              <Link href={`/teacher/topics?a=${assignment.id}`} className="text-sm font-semibold text-indigo-600 hover:underline">
+              <Link href={`/teacher/topics?a=${assignment.id}`} className="text-sm font-semibold text-rose-600 hover:underline">
                 Plan topics →
               </Link>
             }
@@ -204,7 +204,7 @@ export default async function ClassDashboard({ params }: { params: Promise<{ ass
       <Card className="mt-6">
         <CardTitle
           right={
-            <Link href="/teacher/assignments" className="text-sm font-semibold text-indigo-600 hover:underline">
+            <Link href="/teacher/assignments" className="text-sm font-semibold text-rose-600 hover:underline">
               Manage assignments →
             </Link>
           }
@@ -215,7 +215,7 @@ export default async function ClassDashboard({ params }: { params: Promise<{ ass
           <ul className="space-y-2">
             {assignments.map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-2 text-sm">
-                <Link href={`/teacher/assignments/${a.id}`} className="font-medium text-slate-700 hover:text-indigo-600">
+                <Link href={`/teacher/assignments/${a.id}`} className="font-medium text-slate-700 hover:text-rose-600">
                   {truncate(a.title, 50)}
                 </Link>
                 <span className="text-xs text-slate-500">

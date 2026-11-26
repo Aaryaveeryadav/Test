@@ -14,7 +14,7 @@ export default async function LoginPage({
     <main id="main" className="flex min-h-dvh items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <GraduationCap className="mx-auto h-10 w-10 text-indigo-600" />
+          <GraduationCap className="mx-auto h-10 w-10 text-rose-600" />
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight">Sign in to Sahayak</h1>
           <p className="mt-1 text-sm text-slate-500">
             One login for everyone — students, teachers and administrators. Your role comes from your account.
@@ -36,7 +36,7 @@ export default async function LoginPage({
 
         <p className="mt-4 text-center text-sm text-slate-500">
           New here?{' '}
-          <a href="/signup" className="font-semibold text-indigo-600 hover:underline">
+          <a href="/signup" className="font-semibold text-rose-600 hover:underline">
             Request access with your school code
           </a>
         </p>

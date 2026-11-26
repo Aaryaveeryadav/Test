@@ -1,4 +1,11 @@
 import type { Metadata, Viewport } from 'next'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/inter/800.css'
+import '@fontsource/source-serif-4/600.css'
+import '@fontsource/source-serif-4/700.css'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -18,8 +25,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-indigo-600 focus:px-3 focus:py-2 focus:text-white">
+      <body className="font-sans">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-rose-600 focus:px-3 focus:py-2 focus:text-white"
+        >
           Skip to content
         </a>
         {children}
