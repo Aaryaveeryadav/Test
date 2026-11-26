@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/ratelimit'
 import { answerQuestion } from '@/lib/ai/tutor'
 import { OllamaError } from '@/lib/ai/ollama'
+import { findStoredAnswer, saveStoredAnswer, renderStoredAnswer, storedCitationsForDb } from '@/lib/answer-store'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -36,22 +37,6 @@ export async function POST(req: NextRequest) {
     body = bodySchema.parse(await req.json())
   } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
-  }
-
-  // Rate limits protect the shared RTX 3050 model server.
-  const burst = await rateLimit(`tutor:burst:${profile.id}`, Number(process.env.TUTOR_BURST_LIMIT || 5), 300)
-  const daily = await rateLimit(`tutor:daily:${profile.id}`, Number(process.env.TUTOR_DAILY_LIMIT || 30), 86_400)
-  if (!burst.ok) {
-    return NextResponse.json(
-      { error: 'You are asking questions very quickly. Please wait a few minutes and try again.', model_online: true },
-      { status: 429 }
-    )
-  }
-  if (!daily.ok) {
-    return NextResponse.json(
-      { error: 'You have reached your fair-use limit for today. Please try again tomorrow or ask your teacher for offline practice.', model_online: true },
-      { status: 429 }
-    )
   }
 
   const admin = createAdminClient()
@@ -111,6 +96,78 @@ export async function POST(req: NextRequest) {
     .reverse()
     .map((r) => ({ role: r.role as 'user' | 'assistant', content: r.content }))
 
+  // ---- Answer store (Upay-style) ------------------------------------------
+  // A question whose answer is already recorded is served instantly from the
+  // database — the GPU never has to wake up for it. Store hits bypass the
+  // fair-use model limits because no model time is consumed.
+  const stored = await findStoredAnswer(admin, scopeSubject, body.message)
+  if (stored && history.length === 0) {
+    const content = renderStoredAnswer(stored)
+    const citations = storedCitationsForDb(stored)
+    const { data: userMsg } = await admin
+      .from('messages')
+      .insert({ chat_id: chatId, role: 'user', content: body.message })
+      .select('id, created_at')
+      .single()
+    const { data: assistantMsg } = await admin
+      .from('messages')
+      .insert({
+        chat_id: chatId,
+        role: 'assistant',
+        content,
+        mode: body.mode,
+        answer_case: 'covered',
+        label: stored.status === 'verified' ? 'Verified answer store' : 'Answer store',
+        concept: null,
+        citations,
+        diagram: null,
+        needs_followup: false
+      })
+      .select('id, created_at')
+      .single()
+    await admin.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId)
+    return NextResponse.json({
+      chat_id: chatId,
+      user_message_id: userMsg?.id,
+      from_store: true,
+      stored_status: stored.status,
+      assistant: {
+        id: assistantMsg?.id,
+        chat_id: chatId,
+        role: 'assistant',
+        content,
+        mode: body.mode,
+        answer_case: 'covered',
+        label: stored.status === 'verified' ? 'Verified answer store' : 'Answer store',
+        concept: null,
+        citations,
+        diagram: null,
+        needs_followup: false,
+        flag_status: 'none',
+        created_at: assistantMsg?.created_at
+      }
+    })
+  }
+
+  // Rate limits protect the shared RTX 3050 model server (model path only).
+  const burst = await rateLimit(`tutor:burst:${profile.id}`, Number(process.env.TUTOR_BURST_LIMIT || 5), 300)
+  const daily = await rateLimit(`tutor:daily:${profile.id}`, Number(process.env.TUTOR_DAILY_LIMIT || 30), 86_400)
+  if (!burst.ok) {
+    return NextResponse.json(
+      { error: 'You are asking questions very quickly. Please wait a few minutes and try again.', model_online: true },
+      { status: 429 }
+    )
+  }
+  if (!daily.ok) {
+    return NextResponse.json(
+      {
+        error: 'You have reached your fair-use limit for today. Please try again tomorrow or ask your teacher for offline practice.',
+        model_online: true
+      },
+      { status: 429 }
+    )
+  }
+
   try {
     const result = await answerQuestion({
       question: body.message,
@@ -118,6 +175,40 @@ export async function POST(req: NextRequest) {
       scope,
       history
     })
+
+    // Remember this answer so the next student asking the same question gets
+    // it instantly. Only grounded, cited answers are stored — extension
+    // answers and out-of-scope replies are never reused as grounded ones.
+    if (result.answer_case === 'covered' && result.citations.length > 0) {
+      try {
+        await saveStoredAnswer(admin, {
+          subjectId: scopeSubject,
+          chapterId: scopeChapter,
+          question: body.message,
+          summary: result.answer_md.split('\n')[0].replace(/\*\*/g, '').slice(0, 300),
+          approaches: [
+            {
+              label: result.label || 'Tutor answer',
+              kind: 'explanation',
+              steps: result.answer_md
+                .split('\n')
+                .filter((l) => l.trim())
+                .slice(0, 12),
+              answer: ''
+            }
+          ],
+          citations: result.citations.map((c) => ({
+            label: [c.source_title, c.chapter ?? '', c.page_number ? `p.${c.page_number}` : '', c.exam_year ? String(c.exam_year) : '']
+              .filter(Boolean)
+              .join(', ')
+          })),
+          model: process.env.OLLAMA_CHAT_MODEL || 'local',
+          status: 'drafted'
+        })
+      } catch {
+        // Store save is best-effort; never block the answer.
+      }
+    }
 
     const { data: userMsg } = await admin
       .from('messages')

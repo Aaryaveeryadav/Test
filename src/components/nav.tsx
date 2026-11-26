@@ -5,7 +5,17 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { NAV_GROUPS, ROLE_ROOT } from '@/lib/nav-config'
 import { BrandLockup } from '@/components/brand'
+import { LangToggle } from '@/components/lang-toggle'
+import { DICT, navLabel, t, type DictKey, type Lang } from '@/lib/i18n'
 import type { Role } from '@/lib/types'
+
+const GROUP_KEY: Record<string, DictKey> = {
+  Learn: 'group_learn',
+  Library: 'group_library',
+  Teach: 'group_teach',
+  Manage: 'group_manage',
+  Platform: 'group_platform'
+}
 
 export function AppNav({
   role,
@@ -13,7 +23,8 @@ export function AppNav({
   roleLabel,
   schoolName,
   signOut,
-  subjectCount
+  subjectCount,
+  lang = 'en'
 }: {
   role: Role
   fullName: string
@@ -21,6 +32,7 @@ export function AppNav({
   schoolName: string | null
   signOut: () => Promise<void>
   subjectCount?: number | null
+  lang?: Lang
 }) {
   const pathname = usePathname()
   const groups = NAV_GROUPS[role] ?? []
@@ -44,13 +56,13 @@ export function AppNav({
           {groups.map((group) => (
             <div key={group.label}>
               <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-stone-400">
-                {group.label}
+                {t(lang, GROUP_KEY[group.label] ?? 'group_learn')}
               </p>
               <div className="space-y-1">
                 {group.items.map((item) => (
                   <Link key={item.href} href={item.href} className={linkCls(item.href, item.match)}>
                     <item.icon className="h-4 w-4 shrink-0" />
-                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{navLabel(lang, item.href, item.label)}</span>
                     {item.badge === 'subjects' && subjectCount ? (
                       <span className="rounded-full bg-blush-100 px-2 py-0.5 text-xs font-bold text-rose-700">
                         {subjectCount}
@@ -72,8 +84,9 @@ export function AppNav({
           )}
           <p className="mt-1 truncate text-xs text-stone-500">{fullName}</p>
           <p className="text-xs text-stone-400">{roleLabel}</p>
+          <LangToggle lang={lang} className="mt-2" />
           <form action={signOut}>
-            <button type="submit" className="mt-2 text-xs font-semibold text-rose-600 hover:underline">
+            <button type="submit" className="mt-2 block text-xs font-semibold text-rose-600 hover:underline">
               Sign out
             </button>
           </form>

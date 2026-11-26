@@ -92,6 +92,8 @@ export interface ChatMessageRow {
   needs_followup: string | null
   flag_status: 'none' | 'flagged' | 'resolved'
   created_at: string
+  /** Client-only flag: this reply came from the answer store, not the GPU. */
+  from_store?: boolean
 }
 
 export interface ActionState {

@@ -113,6 +113,12 @@ export default async function PracticePage({
                   </div>
                   <p className="mt-1 whitespace-pre-line text-sm text-slate-600">{n.body}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                      href={`/student/tutor?subject=${subjectId}${n.chapter_id ? `&chapter=${n.chapter_id}` : ''}&q=${encodeURIComponent(n.body.slice(0, 400))}`}
+                      className="text-sm font-semibold text-rose-600 hover:underline"
+                    >
+                      Solve every way →
+                    </Link>
                     <ActionForm action={saveAttempt} submitLabel="I solved it ✅" className="inline">
                       <input type="hidden" name="subject_id" value={subjectId} />
                       <input type="hidden" name="chapter_id" value={n.chapter_id ?? ''} />
@@ -156,7 +162,14 @@ export default async function PracticePage({
                     {q.marks ? <span>{q.marks} marks</span> : null}
                   </div>
                   <p className="mt-2 text-sm font-medium text-slate-800">{q.question_text}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <Link
+                      href={`/student/tutor?subject=${subjectId}${q.chapter_id ? `&chapter=${q.chapter_id}` : ''}&q=${encodeURIComponent(q.question_text.slice(0, 400))}`}
+                      className="text-sm font-semibold text-rose-600 hover:underline"
+                    >
+                      Solve every way →
+                    </Link>
+                    <span className="text-xs text-slate-300" aria-hidden="true">|</span>
                     <ActionForm action={saveAttempt} submitLabel="I solved it ✅" className="inline">
                       <input type="hidden" name="subject_id" value={subjectId} />
                       <input type="hidden" name="chapter_id" value={q.chapter_id ?? ''} />

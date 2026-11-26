@@ -134,6 +134,39 @@ All demo rows are tagged `[DEMO]` so you can find and remove them before product
   (Tailscale/WireGuard) — never expose Ollama to the public internet. The browser never
   contacts the model server directly.
 
+## The answer store (pre-generated answers)
+
+Like Upay, Sahayak keeps **one reusable answer per question** in the `answer_store` table:
+
+- When a student asks a question that is already in the store, the answer is served **instantly
+  from the database** — the GPU doesn't even wake up, and the question doesn't count against the
+  fair-use model limits. The reply carries an “Instant — from the answer store” badge.
+- When the tutor answers a new grounded question (case *covered* with real citations), the answer
+  is saved to the store automatically, so the next student asking the same thing gets it instantly.
+  Only grounded answers are stored — extension or out-of-scope replies are never reused as grounded.
+- Pre-generate answers for the whole PYQ bank **before** students need them, on the machine that
+  has Ollama:
+
+  ```bash
+  node --env-file=.env.local scripts/build-answer-store.mjs --limit 40
+  # options: --subject <uuid>  --year 2023  --verified  --force
+  ```
+
+  The script uses the shared “four-approaches” policy (`scripts/solve-policy.json`): at least four
+  genuinely distinct approaches, honest method labels (never calling a verification a derivation),
+  candidate substitution checks, Unicode maths, and citations only from retrieved passages or the
+  official model answer on record.
+
+## Bilingual UI (en / हिंदी) and offline PWA
+
+- **Language toggle (EN | हिं)** is in the sidebar footer and on the landing page. The choice is
+  stored in a cookie; server components render the chosen language without flashing. Stage 1
+  covers the brand, landing, nav, and student dashboard — extend `src/lib/i18n.ts` page by page
+  (untranslated strings fall back to English).
+- **Offline PWA:** `public/sw.js` caches static assets (stale-while-revalidate), serves recent
+  pages with a styled `offline.html` fallback, and **never** caches `/api/*` — tutor answers and
+  data always come live from the server. Installable via `public/manifest.webmanifest`.
+
 ## Production deployment
 
 - Deploy the Next.js app to Vercel (or any Node host): set the same env vars there.
