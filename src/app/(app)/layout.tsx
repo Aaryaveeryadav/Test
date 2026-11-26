@@ -43,6 +43,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <TopBar
             role={profile.role}
             fullName={profile.full_name}
+            roleLabel={ROLE_LABEL[profile.role]}
+            signOut={signOutAction}
             boardCode={studentCtx?.boardCode ?? null}
             grade={studentCtx?.grade ?? null}
             subjects={studentCtx ? studentCtx.subjects.map((s) => ({ id: s.id, name: s.name })) : null}

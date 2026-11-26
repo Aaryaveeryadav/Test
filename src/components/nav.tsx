@@ -85,11 +85,6 @@ export function AppNav({
           <p className="mt-1 truncate text-xs text-stone-500">{fullName}</p>
           <p className="text-xs text-stone-400">{roleLabel}</p>
           <LangToggle lang={lang} className="mt-2" />
-          <form action={signOut}>
-            <button type="submit" className="mt-2 block text-xs font-semibold text-rose-600 hover:underline">
-              Sign out
-            </button>
-          </form>
         </div>
       </aside>
 
