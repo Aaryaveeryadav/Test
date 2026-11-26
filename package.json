@@ -1,0 +1,41 @@
+{
+  "name": "sahayak-study-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Secure, multi-school study platform for Class 10 & 12 with grounded local-model AI tutoring (RAG over approved material).",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 3000",
+    "typecheck": "tsc --noEmit",
+    "seed:users": "node --env-file=.env.local scripts/seed-users.mjs",
+    "seed:demo": "node scripts/apply-demo-seed.mjs",
+    "master:admin": "node --env-file=.env.local scripts/create-master-admin.mjs",
+    "retention:cleanup": "node --env-file=.env.local scripts/retention-cleanup.mjs"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.58.0",
+    "lucide-react": "^0.475.0",
+    "next": "^15.5.0",
+    "pdf-parse": "^1.1.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.0"
+  }
+}
