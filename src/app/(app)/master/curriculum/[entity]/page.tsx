@@ -33,8 +33,8 @@ export default async function CurriculumEntityPage({
       admin.from('topics').select('id, title, chapter_id, status').order('title')
     ])
   ])
-  const refData = refDataRaw as unknown as Record<string, string | number>[][]
-  const [boards = [], classes = [], subjects = [], chapters = [], topics = []] = refData
+  const refResults = refDataRaw as unknown as { data: Record<string, string | number>[] | null }[]
+  const [boards = [], classes = [], subjects = [], chapters = [], topics = []] = refResults.map((r) => r.data ?? [])
 
   const boardName = new Map(boards.map((b) => [String(b.id), String(b.name)]))
   const classLabel = new Map(classes.map((c) => [String(c.id), `${boardName.get(String(c.board_id)) ?? '?'} · ${c.label ? String(c.label) : `Class ${c.grade}`}`]))
