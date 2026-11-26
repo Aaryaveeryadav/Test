@@ -10,7 +10,7 @@ export const metadata = { title: 'Ask the tutor' }
 export default async function TutorPage({
   searchParams
 }: {
-  searchParams: Promise<{ subject?: string; chapter?: string }>
+  searchParams: Promise<{ subject?: string; chapter?: string; q?: string }>
 }) {
   const params = await searchParams
   const profile = await requireRole('student')
@@ -62,6 +62,7 @@ export default async function TutorPage({
           initialChapterId={initialChapterId}
           initialChatId={null}
           initialMessages={[]}
+          initialText={typeof params.q === 'string' ? params.q.slice(0, 2000) : ''}
           scopeInfo={{ schoolName: ctx.schoolName, boardName: ctx.boardName, className: `${ctx.className} ${ctx.section}` }}
         />
       </div>

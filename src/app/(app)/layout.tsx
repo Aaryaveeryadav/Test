@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { cookies } from 'next/headers'
 import { requireProfile } from '@/lib/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AppNav } from '@/components/nav'
@@ -6,9 +7,11 @@ import { TopBar } from '@/components/top-bar'
 import { getStudentContext } from '@/lib/data'
 import { signOutAction } from '@/actions/auth-actions'
 import { ROLE_LABEL } from '@/lib/types'
+import { LANG_COOKIE, resolveLang } from '@/lib/i18n'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const profile = await requireProfile()
+  const lang = resolveLang((await cookies()).get(LANG_COOKIE)?.value)
 
   let schoolName: string | null = null
   if (profile.school_id) {
@@ -33,6 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         schoolName={schoolName}
         signOut={signOutAction}
         subjectCount={studentCtx?.subjects.length ?? null}
+        lang={lang}
       />
       <main id="main" className="lg:pl-60">
         <Suspense>

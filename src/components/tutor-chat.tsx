@@ -25,6 +25,7 @@ export function TutorChat({
   initialChapterId,
   initialChatId,
   initialMessages,
+  initialText = '',
   scopeInfo
 }: {
   subjects: { id: string; name: string }[]
@@ -34,6 +35,7 @@ export function TutorChat({
   initialChapterId: string | null
   initialChatId: string | null
   initialMessages: ChatMessageRow[]
+  initialText?: string
   scopeInfo: ScopeInfo
 }) {
   const [subjectId, setSubjectId] = useState(initialSubjectId)
@@ -41,7 +43,7 @@ export function TutorChat({
   const [chatId, setChatId] = useState<string | null>(initialChatId)
   const [messages, setMessages] = useState<ChatMessageRow[]>(initialMessages)
   const [mode, setMode] = useState<TutorMode>('concept')
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(initialText)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [modelOnline, setModelOnline] = useState<boolean | null>(null)
@@ -105,7 +107,7 @@ export function TutorChat({
         return
       }
       setChatId(json.chat_id)
-      setMessages((m) => [...m, json.assistant as ChatMessageRow])
+      setMessages((m) => [...m, { ...(json.assistant as ChatMessageRow), from_store: Boolean(json.from_store) }])
     } catch {
       setMessages((m) => m.filter((x) => x.id !== tempId))
       setInput(question)
@@ -329,6 +331,9 @@ function AssistantMessage({ message }: { message: ChatMessageRow }) {
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <Bot className="h-4 w-4 text-rose-600" />
         {badge ? <Badge tone={badge.tone}>{badge.text}</Badge> : <Badge tone="slate">Tutor</Badge>}
+        {message.from_store ? (
+          <Badge tone="green">⚡ Instant — from the answer store (GPU not needed)</Badge>
+        ) : null}
         {message.mode ? <Badge tone="slate">{TUTOR_MODES.find((t) => t.id === message.mode)?.label ?? message.mode}</Badge> : null}
       </div>
       <Markdown>{message.content}</Markdown>

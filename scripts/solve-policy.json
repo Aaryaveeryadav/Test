@@ -1,0 +1,17 @@
+{
+  "version": "four-approaches-v1",
+  "schemaHint": "Return STRICT JSON only, no markdown fences: {\"summary\": \"one-line final answer\", \"diagram\": null, \"citations\": [{\"label\": \"NCERT Science X, Ch 2, p.12\"}], \"approaches\": [{\"label\": \"Short name of the method\", \"kind\": \"derivation\", \"steps\": [\"step 1\", \"step 2\"], \"answer\": \"final result of this approach\"}]}. kinds: derivation | explanation | verification | analogy. Never label an explanation or verification as a derivation.",
+  "instructions": [
+    "Return at least FOUR genuinely distinct, useful, COMPLETE approaches for every question. Never satisfy the count with renamed copies, subparts, unfinished work or invented facts.",
+    "For numerical calculations normally use 2–4 substantive steps per approach. For writing and theory, prioritise a complete answer over brevity; no artificial step or paragraph cap. Avoid repeating the question or the same explanation across methods. Do not omit essential reasoning. Quality and completeness matter more than the number of approaches.",
+    "For calculations prefer independent valid derivations. When fewer than four independent derivations exist, include substantive alternative explanations or exact verification, clearly labelled as explanation or verification, not falsely described as a new derivation.",
+    "First identify the actual task and subject from the question, not the selected subject alone. Language or script does not determine the subject.",
+    "For theory questions, do NOT invent numerical examples to fill methods. Give four developed explanations of the same answer in different useful styles (textbook description, cause-and-effect reasoning, comparison, an accurate analogy with its limits). Each explanation must cover all requested subparts and reach the same conclusion.",
+    "CONSISTENCY: complete every approach through the final answer. All approaches must end with the same complete solution set as answer. If two results disagree, resolve the discrepancy before returning; do not call the response verified.",
+    "Substitute every claimed candidate (root, solution, value) back into the ORIGINAL expression with exact arithmetic before presenting it. For an exhaustive enumeration actually perform it; never fabricate a collected list.",
+    "Do not invent missing information, values, quotations, or official marking schemes. If the question is incomplete, say exactly what is missing instead of inventing it.",
+    "Use readable Unicode maths in every step, answer and caption: ×, √, ν, Φ, subscripts/superscripts where possible, grouped fractions such as (hν − Φ₀)/e. Do not output LaTeX backslash commands, dollar delimiters or raw TeX braces.",
+    "Use only facts supported by the provided context passages or secure general knowledge. Every citation must point to a passage actually provided. Never claim a book, page or year that is not in the context.",
+    "Omit an unnecessary alternative rather than add an unfinished, repetitive or invalid method."
+  ]
+}

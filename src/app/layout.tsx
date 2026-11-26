@@ -7,6 +7,7 @@ import '@fontsource/inter/800.css'
 import '@fontsource/source-serif-4/600.css'
 import '@fontsource/source-serif-4/700.css'
 import './globals.css'
+import { PWARegister } from '@/components/pwa-register'
 
 export const metadata: Metadata = {
   title: {
@@ -14,12 +15,15 @@ export const metadata: Metadata = {
     template: '%s · Sahayak'
   },
   description:
-    'Multi-school study platform for Class 10 & 12: grounded AI tutor over approved material, practice, assignments and progress — with a local AI model only.'
+    'Multi-school study platform for Class 10 & 12: grounded AI tutor over approved material, practice, assignments and progress — with a local AI model only.',
+  manifest: '/manifest.webmanifest',
+  icons: { icon: '/icon.svg' }
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
-  initialScale: 1
+  initialScale: 1,
+  themeColor: '#E11D48'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+        <PWARegister />
         {children}
       </body>
     </html>
