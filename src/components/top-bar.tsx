@@ -1,28 +1,34 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Sparkles } from 'lucide-react'
 import { activeNavItem, ROLE_ROOT } from '@/lib/nav-config'
+import { t, type Lang } from '@/lib/i18n'
 import type { Role } from '@/lib/types'
 
 /**
- * Desktop top bar: breadcrumb trail on the left, scope indicator /
- * subject selector in the middle, account chip on the right.
- * The scope controls appear only where a subject choice is meaningful
- * (tutor, practice, subject pages) and update the page context in the URL.
+ * Desktop top bar: breadcrumb trail on the left; board/class/subject scope
+ * selector, "Show me the ways" and account chip on the right.
+ * For students the scope chips are always visible (like the reference app):
+ * the subject selector jumps to that subject's page, or updates tutor/practice
+ * in place. Ctrl/Cmd+K opens the tutor from anywhere.
  */
 export function TopBar({
   role,
   fullName,
   boardCode,
   grade,
-  subjects
+  subjects,
+  lang = 'en'
 }: {
   role: Role
   fullName: string
   boardCode?: string | null
   grade?: number | null
   subjects?: { id: string; name: string }[] | null
+  lang?: Lang
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -31,16 +37,33 @@ export function TopBar({
   const current = activeNavItem(pathname, role)
   const initial = fullName.trim().charAt(0).toUpperCase() || '•'
 
+  const isStudent = role === 'student'
   const subjectPageMatch = pathname.match(/^\/student\/subject\/([^/]+)/)
-  const scopeRelevant = Boolean(subjectPageMatch) || pathname.startsWith('/student/tutor') || pathname.startsWith('/student/practice')
+  const inScopeContext =
+    Boolean(subjectPageMatch) || pathname.startsWith('/student/tutor') || pathname.startsWith('/student/practice')
   const querySubject = params.get('subject')
   const currentSubjectId =
-    subjectPageMatch?.[1] ?? (subjects?.some((s) => s.id === querySubject) ? querySubject : subjects?.[0]?.id)
+    subjectPageMatch?.[1] ??
+    (subjects?.some((s) => s.id === querySubject) ? querySubject : subjects?.[0]?.id)
 
   const changeSubject = (id: string) => {
     if (subjectPageMatch) router.push(`/student/subject/${id}`)
-    else router.replace(`${pathname}?subject=${id}`)
+    else if (inScopeContext) router.replace(`${pathname}?subject=${id}`)
+    else router.push(`/student/subject/${id}`)
   }
+
+  // Ctrl/Cmd+K → open the tutor ("Show me the ways").
+  useEffect(() => {
+    if (!isStudent) return
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        router.push('/student/tutor')
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isStudent, router])
 
   return (
     <div className="sticky top-0 z-20 hidden border-b border-stone-200/70 bg-cream/90 backdrop-blur md:block">
@@ -60,7 +83,7 @@ export function TopBar({
         </nav>
 
         <div className="flex items-center gap-2">
-          {scopeRelevant && subjects && subjects.length > 0 ? (
+          {isStudent && subjects && subjects.length > 0 ? (
             <>
               {boardCode ? (
                 <span className="scope-select" title="Board">
@@ -90,6 +113,21 @@ export function TopBar({
                 </select>
               </label>
             </>
+          ) : null}
+
+          {isStudent ? (
+            <button
+              type="button"
+              onClick={() => router.push('/student/tutor')}
+              title="Ctrl/Cmd + K"
+              className="flex items-center gap-1.5 rounded-xl border border-stone-200/80 bg-white py-1.5 pl-3 pr-2.5 text-sm font-semibold text-stone-700 shadow-card transition-all hover:shadow-pop hover:text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+            >
+              <Sparkles className="h-4 w-4 text-rose-600" aria-hidden="true" />
+              {t(lang, 'show_ways')}
+              <kbd className="rounded-md border border-stone-200 bg-stone-50 px-1.5 py-0.5 text-[10px] font-bold text-stone-400">
+                Ctrl K
+              </kbd>
+            </button>
           ) : null}
 
           <span className="flex items-center gap-2 rounded-full border border-stone-200/80 bg-white py-1 pl-1 pr-3 shadow-card">

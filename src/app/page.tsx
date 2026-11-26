@@ -73,8 +73,16 @@ export default async function LandingPage() {
         ) : null}
 
         {/* Hero */}
-        <section className="grid items-center gap-10 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:py-14">
-          <div>
+        <section className="relative grid items-center gap-10 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:py-14">
+          <div
+            className="pointer-events-none absolute -right-24 top-10 hidden h-96 w-96 rounded-full bg-blush-100/70 lg:block"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute bottom-2 right-56 hidden h-24 w-24 rounded-full bg-blush-200/60 lg:block"
+            aria-hidden="true"
+          />
+          <div className="relative">
             <span className="badge bg-blush-100 text-rose-800 ring-1 ring-rose-200">
               <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
               {t(lang, 'landing_pill')}
@@ -97,7 +105,7 @@ export default async function LandingPage() {
             <p className="mt-3 text-xs text-stone-400">{t(lang, 'landing_note')}</p>
           </div>
 
-          <aside className="card rotate-1 p-6 shadow-pop">
+          <aside className="card relative rotate-1 p-6 shadow-pop">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
               {t(lang, 'landing_sample')}
             </p>

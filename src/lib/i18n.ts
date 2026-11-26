@@ -16,6 +16,7 @@ type Entry = { en: string; hi: string }
 export const DICT = {
   // Brand + tagline
   tagline: { en: 'Every way to solve', hi: 'हर तरीका हल का' },
+  show_ways: { en: 'Show me the ways', hi: 'हर तरीका दिखाओ' },
 
   // Nav groups
   group_learn: { en: 'Learn', hi: 'सीखें' },

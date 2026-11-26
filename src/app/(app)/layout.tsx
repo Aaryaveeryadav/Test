@@ -46,6 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             boardCode={studentCtx?.boardCode ?? null}
             grade={studentCtx?.grade ?? null}
             subjects={studentCtx ? studentCtx.subjects.map((s) => ({ id: s.id, name: s.name })) : null}
+            lang={lang}
           />
         </Suspense>
         <div className="mx-auto max-w-6xl p-4 sm:p-6">{children}</div>
