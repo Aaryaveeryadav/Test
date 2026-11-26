@@ -128,7 +128,7 @@ export default async function DocumentsPage() {
                       </td>
                       <td className="td whitespace-nowrap text-xs">{formatDate(d.created_at)}</td>
                       <td className="td">
-                        <Link href={`/master/documents/${d.id}`} className="text-xs font-semibold text-indigo-600 hover:underline">
+                        <Link href={`/master/documents/${d.id}`} className="text-xs font-semibold text-rose-600 hover:underline">
                           Open →
                         </Link>
                       </td>

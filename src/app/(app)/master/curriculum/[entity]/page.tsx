@@ -124,7 +124,7 @@ export default async function CurriculumEntityPage({
           </ActionForm>
           {editing ? (
             <p className="mt-2 text-xs">
-              <Link href={`/master/curriculum/${entity}`} className="text-indigo-600 hover:underline">
+              <Link href={`/master/curriculum/${entity}`} className="text-rose-600 hover:underline">
                 Cancel editing
               </Link>
             </p>
@@ -166,7 +166,7 @@ export default async function CurriculumEntityPage({
                         <div className="flex gap-2">
                           <Link
                             href={`/master/curriculum/${entity}?edit=${r.id}`}
-                            className="text-xs font-semibold text-indigo-600 hover:underline"
+                            className="text-xs font-semibold text-rose-600 hover:underline"
                           >
                             Edit
                           </Link>

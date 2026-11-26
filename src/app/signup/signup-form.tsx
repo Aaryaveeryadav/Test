@@ -91,7 +91,7 @@ export function RequestAccessForm() {
             <input type="checkbox" name="guardian_consent" className="mt-0.5" />
             <span>
               I confirm that my parent/guardian has read the{' '}
-              <a href="/privacy" target="_blank" className="font-semibold text-indigo-600 underline">
+              <a href="/privacy" target="_blank" className="font-semibold text-rose-600 underline">
                 privacy notice
               </a>{' '}
               and agrees to this account. <span className="text-rose-600">*</span>

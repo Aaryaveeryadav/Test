@@ -42,7 +42,7 @@ export default async function SignupPage({
   return (
     <main id="main" className="mx-auto min-h-dvh w-full max-w-xl px-4 py-10">
       <div className="mb-6 text-center">
-        <GraduationCap className="mx-auto h-10 w-10 text-indigo-600" />
+        <GraduationCap className="mx-auto h-10 w-10 text-rose-600" />
         <h1 className="mt-2 text-2xl font-extrabold tracking-tight">
           {invite ? 'Complete your staff account' : 'Request access'}
         </h1>
@@ -80,7 +80,7 @@ export default async function SignupPage({
 
       <p className="mt-4 text-center text-sm text-slate-500">
         Already approved?{' '}
-        <a href="/login" className="font-semibold text-indigo-600 hover:underline">
+        <a href="/login" className="font-semibold text-rose-600 hover:underline">
           Sign in
         </a>
       </p>

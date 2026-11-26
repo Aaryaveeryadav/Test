@@ -76,7 +76,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
                   right={
                     <Link
                       href={`/student/tutor?subject=${subjectId}&chapter=${c.id}`}
-                      className="text-sm font-semibold text-indigo-600 hover:underline"
+                      className="text-sm font-semibold text-rose-600 hover:underline"
                     >
                       Ask about this chapter →
                     </Link>

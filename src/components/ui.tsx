@@ -17,7 +17,7 @@ export function CardTitle({ children, right }: { children: ReactNode; right?: Re
 
 const TONES: Record<string, string> = {
   slate: 'bg-slate-100 text-slate-700',
-  indigo: 'bg-indigo-100 text-indigo-700',
+  indigo: 'bg-blush-100 text-rose-700',
   green: 'bg-emerald-100 text-emerald-700',
   amber: 'bg-amber-100 text-amber-800',
   rose: 'bg-rose-100 text-rose-700',
@@ -59,7 +59,7 @@ export function EmptyState({ title, hint }: { title: string; hint?: string }) {
 
 export function ProgressBar({ pct }: { pct: number | null }) {
   const v = pct ?? 0
-  const tone = v >= 80 ? 'bg-emerald-500' : v >= 50 ? 'bg-indigo-500' : v >= 25 ? 'bg-amber-500' : 'bg-rose-500'
+  const tone = v >= 80 ? 'bg-emerald-500' : v >= 50 ? 'bg-rose-500' : v >= 25 ? 'bg-amber-500' : 'bg-rose-500'
   return (
     <div className="flex items-center gap-2">
       <div className="h-2 w-full min-w-[60px] overflow-hidden rounded-full bg-slate-200">
@@ -101,7 +101,7 @@ export function DisclaimerNote({ children }: { children?: ReactNode }) {
 
 export function BackLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="text-sm font-medium text-indigo-600 hover:underline">
+    <Link href={href} className="text-sm font-medium text-rose-600 hover:underline">
       ← {children}
     </Link>
   )
