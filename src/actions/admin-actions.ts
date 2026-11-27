@@ -15,7 +15,7 @@ export async function approveRequest(_prev: ActionState, formData: FormData): Pr
   const admin = createAdminClient()
   const { data: request } = await admin
     .from('signup_requests')
-    .select('id, school_id, requested_role, email, full_name, roll_number, guardian_name, guardian_contact, guardian_consent, status')
+    .select('id, school_id, requested_role, requested_class_id, email, full_name, roll_number, guardian_name, guardian_contact, guardian_consent, status')
     .eq('id', requestId)
     .maybeSingle()
   if (!request) return { error: 'Request not found.' }
@@ -59,6 +59,28 @@ export async function approveRequest(_prev: ActionState, formData: FormData): Pr
     return { error: 'Could not create the profile. Please try again.' }
   }
 
+  // Students: enroll into the school's class matching the requested class
+  // (first active section). If none matches, the admin can enroll manually.
+  let enrolled = false
+  if (request.requested_role === 'student' && request.requested_class_id) {
+    const { data: sc } = await admin
+      .from('school_classes')
+      .select('id')
+      .eq('school_id', request.school_id)
+      .eq('class_id', request.requested_class_id)
+      .eq('status', 'active')
+      .order('section')
+      .limit(1)
+    if (sc?.[0]) {
+      const { error: enrollErr } = await admin.from('enrollments').insert({
+        school_id: request.school_id,
+        student_id: created.user.id,
+        school_class_id: sc[0].id
+      })
+      enrolled = !enrollErr
+    }
+  }
+
   await admin
     .from('signup_requests')
     .update({ status: 'approved', reviewed_by: profile.id, reviewed_at: new Date().toISOString() })
@@ -70,12 +92,14 @@ export async function approveRequest(_prev: ActionState, formData: FormData): Pr
     action: 'users.approved',
     entity: 'signup_requests',
     entityId: requestId,
-    details: { role: request.requested_role }
+    details: { role: request.requested_role, enrolled }
   })
 
   revalidatePath('/admin/approvals')
   return {
-    success: 'Account created. Share this one-time password securely and ask them to change it after first login.',
+    success: enrolled
+      ? 'Account created and the student was enrolled into their requested class. Share this one-time password securely and ask them to change it after first login.'
+      : 'Account created. Share this one-time password securely and ask them to change it after first login.',
     data: { email: request.email, temp_password: tempPassword }
   }
 }

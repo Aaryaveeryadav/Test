@@ -18,6 +18,7 @@ export async function requestAccess(_prev: ActionState, formData: FormData): Pro
   const requestedRole = str(formData, 'requested_role') === 'teacher' ? 'teacher' : 'student'
   const fullName = str(formData, 'full_name')
   const email = str(formData, 'email').toLowerCase()
+  const classId = optStr(formData, 'class_id')
   const rollNumber = optStr(formData, 'roll_number')
   const guardianName = optStr(formData, 'guardian_name')
   const guardianContact = optStr(formData, 'guardian_contact')
@@ -31,6 +32,9 @@ export async function requestAccess(_prev: ActionState, formData: FormData): Pro
     return { error: 'Name or email is too long.' }
   }
   if (requestedRole === 'student') {
+    if (!classId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(classId)) {
+      return { error: 'Please choose your class from the list (it appears after you enter a valid school code).' }
+    }
     if (!rollNumber) return { error: 'Roll number is required for students (used for school verification).' }
     if (!guardianConsent) {
       return { error: 'Guardian consent is required for student accounts. Please ask your parent/guardian to review and tick the consent box.' }
@@ -60,9 +64,24 @@ export async function requestAccess(_prev: ActionState, formData: FormData): Pro
     .maybeSingle()
   if (dup) return { error: 'A request with this email is already pending review by your school.' }
 
+  // Students: make sure the chosen class is actually offered by this school.
+  if (requestedRole === 'student') {
+    const { data: offered } = await admin
+      .from('school_classes')
+      .select('id')
+      .eq('school_id', school.id)
+      .eq('class_id', classId!)
+      .eq('status', 'active')
+      .limit(1)
+    if (!offered?.length) {
+      return { error: 'That class is not offered by this school. Pick a class from the list.' }
+    }
+  }
+
   const { error } = await admin.from('signup_requests').insert({
     school_id: school.id,
     requested_role: requestedRole,
+    requested_class_id: requestedRole === 'student' ? classId : null,
     email,
     full_name: fullName,
     roll_number: requestedRole === 'student' ? rollNumber : null,

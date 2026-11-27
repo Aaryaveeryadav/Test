@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { requestAccess, completeInvite } from '@/actions/auth-actions'
 import { SubmitButton } from '@/components/action-form'
@@ -8,6 +8,44 @@ import { SubmitButton } from '@/components/action-form'
 export function RequestAccessForm() {
   const [state, formAction] = useActionState(requestAccess, {})
   const [role, setRole] = useState<'student' | 'teacher'>('student')
+  const [schoolCode, setSchoolCode] = useState('')
+  const [schoolName, setSchoolName] = useState<string | null>(null)
+  const [classOptions, setClassOptions] = useState<{ id: string; label: string }[]>([])
+  const [classesLoading, setClassesLoading] = useState(false)
+
+  // Look up the school's offered classes as soon as a plausible code is typed.
+  useEffect(() => {
+    const code = schoolCode.trim().toUpperCase()
+    if (!/^[A-Z0-9-]{3,20}$/.test(code)) {
+      setSchoolName(null)
+      setClassOptions([])
+      return
+    }
+    let cancelled = false
+    setClassesLoading(true)
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/school-classes?code=${encodeURIComponent(code)}`)
+        if (!res.ok) throw new Error('bad response')
+        const data = (await res.json()) as { school: { name: string } | null; classes: { id: string; label: string }[] }
+        if (!cancelled) {
+          setSchoolName(data.school?.name ?? null)
+          setClassOptions(data.classes ?? [])
+        }
+      } catch {
+        if (!cancelled) {
+          setSchoolName(null)
+          setClassOptions([])
+        }
+      } finally {
+        if (!cancelled) setClassesLoading(false)
+      }
+    }, 350)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [schoolCode])
 
   if (state.success) {
     return (
@@ -30,8 +68,20 @@ export function RequestAccessForm() {
         <label className="label" htmlFor="school_code">
           School code <span className="text-rose-600">*</span>
         </label>
-        <input id="school_code" name="school_code" required className="input uppercase" placeholder="e.g. DEMO100" />
-        <p className="mt-1 text-xs text-slate-400">Ask your school office for this code.</p>
+        <input
+          id="school_code"
+          name="school_code"
+          required
+          className="input uppercase"
+          placeholder="e.g. DEMO100"
+          value={schoolCode}
+          onChange={(e) => setSchoolCode(e.target.value)}
+        />
+        {schoolName ? (
+          <p className="mt-1 text-xs font-semibold text-emerald-700">✓ {schoolName}</p>
+        ) : (
+          <p className="mt-1 text-xs text-slate-400">Ask your school office for this code.</p>
+        )}
       </div>
 
       <div>
@@ -67,6 +117,24 @@ export function RequestAccessForm() {
 
       {role === 'student' ? (
         <>
+          <div>
+            <label className="label" htmlFor="class_id">
+              Class <span className="text-rose-600">*</span>
+            </label>
+            <select id="class_id" name="class_id" required className="input" disabled={classOptions.length === 0}>
+              <option value="">
+                {classesLoading ? 'Checking school code…' : classOptions.length === 0 ? 'Enter a valid school code first' : 'Choose your class'}
+              </option>
+              {classOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-slate-400">
+              Only classes your school offers are listed. The school confirms your section when approving.
+            </p>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="roll_number">

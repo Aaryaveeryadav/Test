@@ -116,6 +116,7 @@ create table public.signup_requests (
   id uuid primary key default gen_random_uuid(),
   school_id uuid not null references public.schools(id) on delete cascade,
   requested_role text not null check (requested_role in ('student','teacher')),
+  requested_class_id uuid references public.classes(id) on delete set null,
   email text not null,
   full_name text not null,
   roll_number text,
