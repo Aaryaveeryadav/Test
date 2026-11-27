@@ -11,7 +11,7 @@ export default async function ApprovalsPage() {
   const profile = await requireRole('school_admin')
   const admin = createAdminClient()
 
-  const [{ data: requests }, { data: invitations }] = await Promise.all([
+  const [{ data: requests }, { data: invitations }, { data: classRows }] = await Promise.all([
     admin
       .from('signup_requests')
       .select('*')
@@ -23,8 +23,13 @@ export default async function ApprovalsPage() {
       .select('id, email, full_name, role, status, token, expires_at, created_at')
       .eq('school_id', profile.school_id)
       .order('created_at', { ascending: false })
-      .limit(50)
+      .limit(50),
+    admin.from('classes').select('id, grade, label')
   ])
+
+  const classLabel = new Map(
+    (classRows ?? []).map((c) => [c.id, c.label ?? `Class ${c.grade}`] as const)
+  )
 
   const pending = (requests ?? []).filter((r) => r.status === 'pending')
   const reviewed = (requests ?? []).filter((r) => r.status !== 'pending')
@@ -55,6 +60,9 @@ export default async function ApprovalsPage() {
                   </div>
                   <p className="mt-1 text-sm text-slate-600">
                     {r.email}
+                    {r.requested_class_id && classLabel.get(r.requested_class_id)
+                      ? ` · ${classLabel.get(r.requested_class_id)}`
+                      : ''}
                     {r.roll_number ? ` · Roll ${r.roll_number}` : ''}
                   </p>
                   {r.requested_role === 'student' ? (

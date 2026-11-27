@@ -49,7 +49,7 @@ export default async function SignupPage({
         <p className="mt-1 text-sm text-slate-500">
           {invite
             ? 'You were invited by your school. Set your password to finish setup.'
-            : 'Students join with a school code and roll number. Teachers are approved or invited by the school — nobody becomes a teacher by simply selecting it here.'}
+            : 'Students join with a school code and pick their class. Teachers are approved or invited by the school — nobody becomes a teacher by simply selecting it here.'}
         </p>
       </div>
 
